@@ -1,0 +1,4 @@
+{
+  "read_only": ["search_docs"],
+  "side_effect_verbs": ["send", "post", "email", "delete"]
+}
