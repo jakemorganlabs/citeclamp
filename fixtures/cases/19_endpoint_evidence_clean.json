@@ -1,0 +1,18 @@
+{
+  "id": "19_endpoint_evidence_clean",
+  "note": "A factual sentence cites e-4 with span 19:21 equal to 23. The seal passes.",
+  "draft": {
+    "sentences": [
+      {
+        "text": "The survey counted 23 stations along the northern line.",
+        "kind": "factual",
+        "citations": ["e-4"],
+        "numbers": [
+          { "value": "23", "claim": { "kind": "evidence_span", "evidence_id": "e-4", "start": 19, "end": 21 } }
+        ]
+      }
+    ],
+    "tool_calls": []
+  },
+  "expect": { "sealed": true }
+}

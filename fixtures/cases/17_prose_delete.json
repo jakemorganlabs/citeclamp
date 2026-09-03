@@ -1,0 +1,16 @@
+{
+  "id": "17_prose_delete",
+  "note": "The verb delete appears as a whole word in the sentence text. SIDE_EFFECT_WITHOUT_PERMIT.",
+  "draft": {
+    "sentences": [
+      {
+        "text": "Please delete the stale cache entry now.",
+        "kind": "factual",
+        "citations": ["e-2"],
+        "numbers": []
+      }
+    ],
+    "tool_calls": []
+  },
+  "expect": { "sealed": false, "codes": ["SIDE_EFFECT_WITHOUT_PERMIT"] }
+}

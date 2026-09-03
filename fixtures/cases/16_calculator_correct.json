@@ -1,0 +1,18 @@
+{
+  "id": "16_calculator_correct",
+  "note": "The calculator sum over 3 and 4 returns 7. The claim says 7. The seal passes.",
+  "draft": {
+    "sentences": [
+      {
+        "text": "The combined load is 7 kilonewtons.",
+        "kind": "factual",
+        "citations": ["e-1"],
+        "numbers": [
+          { "value": "7", "claim": { "kind": "calculator", "calculator": "sum", "inputs": { "a": "3", "b": "4" } } }
+        ]
+      }
+    ],
+    "tool_calls": []
+  },
+  "expect": { "sealed": true }
+}

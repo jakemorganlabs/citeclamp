@@ -1,0 +1,18 @@
+{
+  "id": "04_off_by_one_span",
+  "note": "The span starts one byte late. The slice misses the first digit. UNSIGNED_NUMBER.",
+  "draft": {
+    "sentences": [
+      {
+        "text": "The survey counted 23 stations along the northern line.",
+        "kind": "factual",
+        "citations": ["e-4"],
+        "numbers": [
+          { "value": "23", "claim": { "kind": "evidence_span", "evidence_id": "e-4", "start": 20, "end": 22 } }
+        ]
+      }
+    ],
+    "tool_calls": []
+  },
+  "expect": { "sealed": false, "codes": ["UNSIGNED_NUMBER"] }
+}

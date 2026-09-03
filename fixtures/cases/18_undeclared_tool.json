@@ -1,0 +1,20 @@
+{
+  "id": "18_undeclared_tool",
+  "note": "The draft declares an unknown tool not on the read-only list. It neuters into a ProposedAction. The seal passes.",
+  "draft": {
+    "sentences": [
+      {
+        "text": "The bridge test recorded a deflection of 42 millimetres at midspan.",
+        "kind": "factual",
+        "citations": ["e-1"],
+        "numbers": [
+          { "value": "42", "claim": { "kind": "evidence_span", "evidence_id": "e-1", "start": 41, "end": 43 } }
+        ]
+      }
+    ],
+    "tool_calls": [
+      { "tool": "publish_report", "args": { "channel": "ops" } }
+    ]
+  },
+  "expect": { "sealed": true }
+}

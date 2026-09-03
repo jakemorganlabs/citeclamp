@@ -1,0 +1,16 @@
+{
+  "id": "07_tool_call_in_prose",
+  "note": "A side-effect verb sits in the sentence as prose. SIDE_EFFECT_WITHOUT_PERMIT.",
+  "draft": {
+    "sentences": [
+      {
+        "text": "I will send the bridge report to the client.",
+        "kind": "factual",
+        "citations": ["e-1"],
+        "numbers": []
+      }
+    ],
+    "tool_calls": []
+  },
+  "expect": { "sealed": false, "codes": ["SIDE_EFFECT_WITHOUT_PERMIT"] }
+}

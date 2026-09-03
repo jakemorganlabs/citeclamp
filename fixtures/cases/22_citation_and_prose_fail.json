@@ -1,0 +1,16 @@
+{
+  "id": "22_citation_and_prose_fail",
+  "note": "The sentence cites an unknown evidence id and carries the verb email. ORPHAN_CITATION and SIDE_EFFECT_WITHOUT_PERMIT.",
+  "draft": {
+    "sentences": [
+      {
+        "text": "I will email the bridge report to the client.",
+        "kind": "factual",
+        "citations": ["e-9"],
+        "numbers": []
+      }
+    ],
+    "tool_calls": []
+  },
+  "expect": { "sealed": false, "codes": ["ORPHAN_CITATION", "SIDE_EFFECT_WITHOUT_PERMIT"] }
+}

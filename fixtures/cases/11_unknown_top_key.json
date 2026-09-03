@@ -1,0 +1,10 @@
+{
+  "id": "11_unknown_top_key",
+  "note": "The draft carries a top-level key the schema does not allow. MALFORMED_DRAFT.",
+  "draft": {
+    "sentences": [],
+    "tool_calls": [],
+    "signature": "forged"
+  },
+  "expect": { "sealed": false, "codes": ["MALFORMED_DRAFT"] }
+}

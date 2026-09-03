@@ -1,0 +1,18 @@
+{
+  "id": "21_calc_bad_inputs",
+  "note": "The calculator receives non-numeric inputs. The output is NaN. The claim says 5. UNSIGNED_NUMBER.",
+  "draft": {
+    "sentences": [
+      {
+        "text": "The combined load is 5 kilonewtons.",
+        "kind": "factual",
+        "citations": ["e-1"],
+        "numbers": [
+          { "value": "5", "claim": { "kind": "calculator", "calculator": "sum", "inputs": { "a": "x", "b": "4" } } }
+        ]
+      }
+    ],
+    "tool_calls": []
+  },
+  "expect": { "sealed": false, "codes": ["UNSIGNED_NUMBER"] }
+}

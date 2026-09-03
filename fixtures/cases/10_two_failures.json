@@ -1,0 +1,18 @@
+{
+  "id": "10_two_failures",
+  "note": "One sentence has an unsigned number and an orphan citation. UNSIGNED_NUMBER and ORPHAN_CITATION.",
+  "draft": {
+    "sentences": [
+      {
+        "text": "The bridge test recorded a deflection of 45 millimetres at midspan.",
+        "kind": "factual",
+        "citations": ["e-9"],
+        "numbers": [
+          { "value": "45", "claim": { "kind": "evidence_span", "evidence_id": "e-1", "start": 41, "end": 43 } }
+        ]
+      }
+    ],
+    "tool_calls": []
+  },
+  "expect": { "sealed": false, "codes": ["UNSIGNED_NUMBER", "ORPHAN_CITATION"] }
+}

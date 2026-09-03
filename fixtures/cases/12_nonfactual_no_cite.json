@@ -1,0 +1,16 @@
+{
+  "id": "12_nonfactual_no_cite",
+  "note": "A nonfactual sentence needs no citation and no number. It passes.",
+  "draft": {
+    "sentences": [
+      {
+        "text": "The report reads well and the structure is clear.",
+        "kind": "nonfactual",
+        "citations": [],
+        "numbers": []
+      }
+    ],
+    "tool_calls": []
+  },
+  "expect": { "sealed": true }
+}

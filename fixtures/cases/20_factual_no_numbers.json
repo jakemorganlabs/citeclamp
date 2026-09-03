@@ -1,0 +1,16 @@
+{
+  "id": "20_factual_no_numbers",
+  "note": "A factual sentence cites e-2 and carries no numbers. The citation seal passes.",
+  "draft": {
+    "sentences": [
+      {
+        "text": "The tank was empty at the start of the trial.",
+        "kind": "factual",
+        "citations": ["e-2"],
+        "numbers": []
+      }
+    ],
+    "tool_calls": []
+  },
+  "expect": { "sealed": true }
+}

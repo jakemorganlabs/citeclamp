@@ -1,0 +1,19 @@
+{
+  "id": "14_second_span_clean",
+  "note": "The invoice sentence seals both spans: 8 units and 15 dollars.",
+  "draft": {
+    "sentences": [
+      {
+        "text": "The final invoice listed 8 units at 15 dollars each.",
+        "kind": "factual",
+        "citations": ["e-3"],
+        "numbers": [
+          { "value": "8", "claim": { "kind": "evidence_span", "evidence_id": "e-3", "start": 25, "end": 26 } },
+          { "value": "15", "claim": { "kind": "evidence_span", "evidence_id": "e-3", "start": 36, "end": 38 } }
+        ]
+      }
+    ],
+    "tool_calls": []
+  },
+  "expect": { "sealed": true }
+}

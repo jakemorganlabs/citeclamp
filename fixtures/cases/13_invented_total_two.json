@@ -1,0 +1,18 @@
+{
+  "id": "13_invented_total_two",
+  "note": "The invoice sentence claims 9 units. The span 25:26 says 8. UNSIGNED_NUMBER.",
+  "draft": {
+    "sentences": [
+      {
+        "text": "The final invoice listed 9 units at 15 dollars each.",
+        "kind": "factual",
+        "citations": ["e-3"],
+        "numbers": [
+          { "value": "9", "claim": { "kind": "evidence_span", "evidence_id": "e-3", "start": 25, "end": 26 } }
+        ]
+      }
+    ],
+    "tool_calls": []
+  },
+  "expect": { "sealed": false, "codes": ["UNSIGNED_NUMBER"] }
+}

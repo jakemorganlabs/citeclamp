@@ -1,0 +1,16 @@
+{
+  "id": "15_multiple_citations",
+  "note": "One factual sentence cites three evidence ids. Each one resolves. The seal passes.",
+  "draft": {
+    "sentences": [
+      {
+        "text": "The team compared deflection, water level, and station count across the two sites.",
+        "kind": "factual",
+        "citations": ["e-1", "e-2", "e-4"],
+        "numbers": []
+      }
+    ],
+    "tool_calls": []
+  },
+  "expect": { "sealed": true }
+}

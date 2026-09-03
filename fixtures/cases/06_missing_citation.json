@@ -1,0 +1,18 @@
+{
+  "id": "06_missing_citation",
+  "note": "A factual sentence cites no evidence id. The number span is valid. ORPHAN_CITATION.",
+  "draft": {
+    "sentences": [
+      {
+        "text": "The tank held 17 litres of water at the start of the trial.",
+        "kind": "factual",
+        "citations": [],
+        "numbers": [
+          { "value": "17", "claim": { "kind": "evidence_span", "evidence_id": "e-2", "start": 14, "end": 16 } }
+        ]
+      }
+    ],
+    "tool_calls": []
+  },
+  "expect": { "sealed": false, "codes": ["ORPHAN_CITATION"] }
+}

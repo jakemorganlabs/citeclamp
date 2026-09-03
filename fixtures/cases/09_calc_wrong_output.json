@@ -1,0 +1,18 @@
+{
+  "id": "09_calc_wrong_output",
+  "note": "The sentence claims a sum of 8. The calculator returns 7 from 3 plus 4. UNSIGNED_NUMBER.",
+  "draft": {
+    "sentences": [
+      {
+        "text": "The combined load is 8 kilonewtons.",
+        "kind": "factual",
+        "citations": ["e-1"],
+        "numbers": [
+          { "value": "8", "claim": { "kind": "calculator", "calculator": "sum", "inputs": { "a": "3", "b": "4" } } }
+        ]
+      }
+    ],
+    "tool_calls": []
+  },
+  "expect": { "sealed": false, "codes": ["UNSIGNED_NUMBER"] }
+}

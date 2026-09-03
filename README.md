@@ -64,7 +64,7 @@ Each merge is demoable on its own. The build runs as spec-driven sessions. One s
 | 01 | 1 | Number sealing: evidence spans and the calculator registry | merged |
 | 02 | 1 | Citation sealing and side-effect neutering | merged |
 | 03 | 1 | The `seal()` walk and a paste-a-draft CLI | merged |
-| 04 | 2 | 20 to 40 fixtures and a fixture runner | next |
+| 04 | 2 | 20 to 40 fixtures and a fixture runner | merged |
 | 05 | 3 | One HMAC endpoint: `/seal` signed, `/health` open | planned |
 | 06 | 4 | Executor process, one-time permit, dummy `send_email` | planned |
 
@@ -97,6 +97,7 @@ src/
   seal_citations.ts    citation seal, ORPHAN_CITATION
   seal_side_effects.ts side-effect neuter, SIDE_EFFECT_WITHOUT_PERMIT
   sealer.ts            the seal() walk
+  fixture_runner.ts    load a fixture, run seal, compare to the expected outcome
   auth.ts              HMAC-SHA256 verification
   server.ts            /seal (HMAC) and /health (open)
   permit.ts            permit verify and burn

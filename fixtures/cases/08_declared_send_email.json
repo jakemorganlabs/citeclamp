@@ -1,0 +1,20 @@
+{
+  "id": "08_declared_send_email",
+  "note": "A declared send_email tool call neuters into one inert ProposedAction.",
+  "draft": {
+    "sentences": [
+      {
+        "text": "The bridge test recorded a deflection of 42 millimetres at midspan.",
+        "kind": "factual",
+        "citations": ["e-1"],
+        "numbers": [
+          { "value": "42", "claim": { "kind": "evidence_span", "evidence_id": "e-1", "start": 41, "end": 43 } }
+        ]
+      }
+    ],
+    "tool_calls": [
+      { "tool": "send_email", "args": { "to": "ops@example.com", "subject": "bridge report" } }
+    ]
+  },
+  "expect": { "sealed": true }
+}
