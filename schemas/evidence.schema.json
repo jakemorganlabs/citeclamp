@@ -1,0 +1,19 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "EvidenceSet",
+  "description": "The evidence set the sealer reads. additionalProperties is false at every level.",
+  "type": "array",
+  "items": { "$ref": "#/definitions/EvidenceItem" },
+  "definitions": {
+    "EvidenceItem": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "source", "text"],
+      "properties": {
+        "id": { "type": "string" },
+        "source": { "type": "string" },
+        "text": { "type": "string" }
+      }
+    }
+  }
+}

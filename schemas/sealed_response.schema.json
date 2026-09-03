@@ -1,0 +1,81 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "SealedResponse",
+  "description": "The pass shape. Every number carries a proof. Every side effect is an inert ProposedAction.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["sentences", "sealed_numbers", "proposed_actions"],
+  "properties": {
+    "sentences": {
+      "type": "array",
+      "items": { "$ref": "#/definitions/SealedSentence" }
+    },
+    "sealed_numbers": {
+      "type": "array",
+      "items": { "$ref": "#/definitions/SealedNumber" }
+    },
+    "proposed_actions": {
+      "type": "array",
+      "items": { "$ref": "#/definitions/ProposedAction" }
+    }
+  },
+  "definitions": {
+    "SealedSentence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["text", "citations"],
+      "properties": {
+        "text": { "type": "string" },
+        "citations": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      }
+    },
+    "SealedNumber": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["value", "proof"],
+      "properties": {
+        "value": { "type": "string" },
+        "proof": { "$ref": "#/definitions/NumberProof" }
+      }
+    },
+    "NumberProof": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["kind", "evidence_id", "start", "end"],
+          "properties": {
+            "kind": { "const": "evidence_span" },
+            "evidence_id": { "type": "string" },
+            "start": { "type": "integer", "minimum": 0 },
+            "end": { "type": "integer", "minimum": 0 }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["kind", "calculator", "input_hash"],
+          "properties": {
+            "kind": { "const": "calculator" },
+            "calculator": { "type": "string" },
+            "input_hash": { "type": "string", "pattern": "^[0-9a-f]{64}$" }
+          }
+        }
+      ]
+    },
+    "ProposedAction": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["action_id", "tool", "args", "requires_permit"],
+      "properties": {
+        "action_id": { "type": "string" },
+        "tool": { "type": "string" },
+        "args": { "type": "object" },
+        "requires_permit": { "const": true }
+      }
+    }
+  }
+}

@@ -1,0 +1,84 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Draft",
+  "description": "The structured draft the model may emit. additionalProperties is false at every level.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["sentences", "tool_calls"],
+  "properties": {
+    "sentences": {
+      "type": "array",
+      "items": { "$ref": "#/definitions/DraftSentence" }
+    },
+    "tool_calls": {
+      "type": "array",
+      "items": { "$ref": "#/definitions/DraftToolCall" }
+    }
+  },
+  "definitions": {
+    "DraftSentence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["text", "kind", "citations", "numbers"],
+      "properties": {
+        "text": { "type": "string" },
+        "kind": { "enum": ["factual", "nonfactual"] },
+        "citations": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "numbers": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/DraftNumber" }
+        }
+      }
+    },
+    "DraftNumber": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["value", "claim"],
+      "properties": {
+        "value": { "type": "string" },
+        "claim": { "$ref": "#/definitions/NumberClaim" }
+      }
+    },
+    "NumberClaim": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["kind", "evidence_id", "start", "end"],
+          "properties": {
+            "kind": { "const": "evidence_span" },
+            "evidence_id": { "type": "string" },
+            "start": { "type": "integer", "minimum": 0 },
+            "end": { "type": "integer", "minimum": 0 }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["kind", "calculator", "inputs"],
+          "properties": {
+            "kind": { "const": "calculator" },
+            "calculator": { "type": "string" },
+            "inputs": {
+              "type": "object",
+              "additionalProperties": { "type": "string" }
+            }
+          }
+        }
+      ]
+    },
+    "DraftToolCall": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["tool", "args"],
+      "properties": {
+        "tool": { "type": "string" },
+        "args": { "type": "object" },
+        "permit_ref": { "type": "string" }
+      }
+    }
+  }
+}

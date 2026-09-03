@@ -1,0 +1,25 @@
+{
+  "name": "citeclamp",
+  "version": "0.0.0",
+  "description": "Deterministic sealer between any model and the world. The model drafts. It never signs, and it never sends.",
+  "type": "module",
+  "private": true,
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "test": "vitest run",
+    "types": "tsc --noEmit",
+    "lint": "eslint src tests"
+  },
+  "devDependencies": {
+    "@types/node": "^26.4.1",
+    "ajv": "^8.17.1",
+    "eslint": "^9.9.0",
+    "fast-check": "^3.22.0",
+    "tsx": "^4.17.0",
+    "typescript": "^5.5.4",
+    "typescript-eslint": "^8.0.1",
+    "vitest": "^2.0.5"
+  }
+}

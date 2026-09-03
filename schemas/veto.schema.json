@@ -1,0 +1,20 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Veto",
+  "description": "The fail shape. A typed veto carries a code, a one-line detail, and a locus.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["code", "detail", "locus"],
+  "properties": {
+    "code": {
+      "enum": [
+        "MALFORMED_DRAFT",
+        "UNSIGNED_NUMBER",
+        "ORPHAN_CITATION",
+        "SIDE_EFFECT_WITHOUT_PERMIT"
+      ]
+    },
+    "detail": { "type": "string" },
+    "locus": { "type": "string" }
+  }
+}
