@@ -1,0 +1,13 @@
+{
+  "sentences": [
+    {
+      "text": "The link is limited to 95 metres.",
+      "kind": "factual",
+      "citations": ["e-1"],
+      "numbers": [
+        { "value": "95", "claim": { "kind": "evidence_span", "evidence_id": "e-1", "start": 23, "end": 25 } }
+      ]
+    }
+  ],
+  "tool_calls": []
+}

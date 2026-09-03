@@ -63,8 +63,8 @@ Each merge is demoable on its own. The build runs as spec-driven sessions. One s
 | 00 | 1 | Scaffold, schemas, shared types, the veto union | merged |
 | 01 | 1 | Number sealing: evidence spans and the calculator registry | merged |
 | 02 | 1 | Citation sealing and side-effect neutering | merged |
-| 03 | 1 | The `seal()` walk and a paste-a-draft CLI | next |
-| 04 | 2 | 20 to 40 fixtures and a fixture runner | planned |
+| 03 | 1 | The `seal()` walk and a paste-a-draft CLI | merged |
+| 04 | 2 | 20 to 40 fixtures and a fixture runner | next |
 | 05 | 3 | One HMAC endpoint: `/seal` signed, `/health` open | planned |
 | 06 | 4 | Executor process, one-time permit, dummy `send_email` | planned |
 
@@ -103,6 +103,7 @@ src/
   executor.ts          second process, permit-gated
   tools/send_email.ts  dummy side-effect tool
 tests/       one test file per module
+examples/    sample drafts and an evidence set for the paste-a-draft CLI
 fixtures/    invented totals, near-miss citations, extra digits, smuggled tool calls
 scripts/     seal.ts paste-a-draft CLI, bash smoke scripts
 specs/       permit.tla and permit.cfg, the permit lifecycle
