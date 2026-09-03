@@ -2,7 +2,7 @@
 
 *The model drafts. It never signs, and it never sends.*
 
-**Status:** pre-release. Design frozen, build not started. No live endpoint yet. Endpoint URLs and any measured value read `__AFTER_DEPLOY__` until the first deploy lands.
+**Status:** pre-release. Design frozen, build in progress. No live endpoint yet. Endpoint URLs and any measured value read `__AFTER_DEPLOY__` until the first deploy lands.
 
 ## What it does
 
@@ -60,10 +60,10 @@ Each merge is demoable on its own. The build runs as spec-driven sessions. One s
 
 | Session | Merge | Deliverable | Status |
 |---|---|---|---|
-| 00 | 1 | Scaffold, schemas, shared types, the veto union | planned |
-| 01 | 1 | Number sealing: evidence spans and the calculator registry | planned |
-| 02 | 1 | Citation sealing and side-effect neutering | planned |
-| 03 | 1 | The `seal()` walk and a paste-a-draft CLI | planned |
+| 00 | 1 | Scaffold, schemas, shared types, the veto union | merged |
+| 01 | 1 | Number sealing: evidence spans and the calculator registry | merged |
+| 02 | 1 | Citation sealing and side-effect neutering | merged |
+| 03 | 1 | The `seal()` walk and a paste-a-draft CLI | next |
 | 04 | 2 | 20 to 40 fixtures and a fixture runner | planned |
 | 05 | 3 | One HMAC endpoint: `/seal` signed, `/health` open | planned |
 | 06 | 4 | Executor process, one-time permit, dummy `send_email` | planned |
