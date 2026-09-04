@@ -2,7 +2,7 @@
 
 *The model drafts. It never signs, and it never sends.*
 
-**Status:** pre-release. Design frozen, build in progress. The `/seal` and `/health` endpoint runs locally behind HMAC. No public deploy yet. Endpoint URLs and any measured value read `__AFTER_DEPLOY__` until the first deploy lands.
+**Status:** pre-release. All seven sessions merged. The `/seal` and `/health` endpoint runs locally behind HMAC. The executor gates every ProposedAction behind a one-time permit. No public deploy yet. Endpoint URLs and any measured value read `__AFTER_DEPLOY__` until the first deploy lands.
 
 ## What it does
 
@@ -66,7 +66,7 @@ Each merge is demoable on its own. The build runs as spec-driven sessions. One s
 | 03 | 1 | The `seal()` walk and a paste-a-draft CLI | merged |
 | 04 | 2 | 20 to 40 fixtures and a fixture runner | merged |
 | 05 | 3 | One HMAC endpoint: `/seal` signed, `/health` open | merged |
-| 06 | 4 | Executor process, one-time permit, dummy `send_email` | planned |
+| 06 | 4 | Executor process, one-time permit, dummy `send_email` | merged |
 
 Session 03 closes the first demo: paste a JSON draft, get a sealed response or veto codes, with no agent and no network.
 
