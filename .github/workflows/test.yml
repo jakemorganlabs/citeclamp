@@ -20,11 +20,11 @@ jobs:
       - run: npm run types
       - run: npm run lint
       - name: Fixture CLI seals the example draft
-        run: npm run seal -- examples/draft_pass.json examples/evidence.json
+        run: npm run -s seal -- examples/draft_pass.json examples/evidence.json
       - name: Executor refuses without a permit and runs with one
         run: |
-          npm run seal -- examples/draft_send_email.json examples/evidence.json > sealed.json
-          npm run execute -- sealed.json
+          npm run -s seal -- examples/draft_send_email.json examples/evidence.json > sealed.json
+          npm run -s execute -- sealed.json
       - name: Boot the server with the native strip-types hook and smoke /seal
         env:
           HMAC_SECRET: ci-smoke-secret
