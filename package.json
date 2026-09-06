@@ -5,21 +5,27 @@
   "type": "module",
   "private": true,
   "engines": {
-    "node": ">=20"
+    "node": ">=22.15"
   },
   "scripts": {
+    "start": "node --experimental-strip-types --import ./scripts/ts-register.mjs src/server.ts",
+    "seal": "node --experimental-strip-types --import ./scripts/ts-register.mjs scripts/seal.ts",
+    "execute": "node --experimental-strip-types --import ./scripts/ts-register.mjs scripts/execute.ts",
+    "smoke": "bash scripts/smoke_seal.sh",
     "test": "vitest run",
     "types": "tsc --noEmit",
     "lint": "eslint src scripts tests"
   },
+  "dependencies": {
+    "ajv": "^8.17.1"
+  },
   "devDependencies": {
     "@types/node": "^26.4.1",
-    "ajv": "^8.17.1",
     "eslint": "^9.9.0",
     "fast-check": "^3.22.0",
-    "tsx": "^4.17.0",
     "typescript": "^5.5.4",
     "typescript-eslint": "^8.0.1",
-    "vitest": "^2.0.5"
+    "vitest": "^2.0.5",
+    "@eslint/js": "^9.9.0"
   }
 }

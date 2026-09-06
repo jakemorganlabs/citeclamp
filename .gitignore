@@ -1,6 +1,13 @@
 node_modules/
 dist/
 coverage/
-.env
 *.log
 .DS_Store
+nohup.out
+*.bak
+
+# secrets: only the .example file is tracked
+.env
+.env.*
+deploy/.env*
+!deploy/.env.production.example

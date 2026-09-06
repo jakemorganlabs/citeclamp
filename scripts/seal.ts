@@ -31,7 +31,7 @@ async function readJson(path: string): Promise<unknown> {
 async function main(): Promise<number> {
   const [draftPath, evidencePath] = process.argv.slice(2);
   if (draftPath === undefined || evidencePath === undefined) {
-    process.stderr.write("usage: tsx scripts/seal.ts <draft.json> <evidence.json>\n");
+    process.stderr.write("usage: npm run seal -- <draft.json> <evidence.json>\n");
     return 1;
   }
 

@@ -1,0 +1,17 @@
+[Unit]
+Description=citeclamp deterministic sealer (/seal behind HMAC, /health open)
+After=network.target
+
+[Service]
+Type=simple
+User=jake
+WorkingDirectory=/opt/citeclamp
+EnvironmentFile=/opt/citeclamp/deploy/.env.production
+ExecStart=/usr/bin/node --experimental-strip-types --import ./scripts/ts-register.mjs src/server.ts
+Restart=on-failure
+RestartSec=3
+NoNewPrivileges=true
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target
