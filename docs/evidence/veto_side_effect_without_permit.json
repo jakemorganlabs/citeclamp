@@ -1,0 +1,27 @@
+{
+  "endpoint": "http://127.0.0.1:8787/seal",
+  "request": {
+    "sentences": [
+      {
+        "text": "I will send the link budget to the client.",
+        "kind": "factual",
+        "citations": [
+          "e-1"
+        ],
+        "numbers": []
+      }
+    ],
+    "tool_calls": []
+  },
+  "status": 200,
+  "response": {
+    "sealed": false,
+    "vetoes": [
+      {
+        "code": "SIDE_EFFECT_WITHOUT_PERMIT",
+        "detail": "sentence text carries the side-effect verb \"send\"",
+        "locus": "sentences[0]"
+      }
+    ]
+  }
+}

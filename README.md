@@ -1,8 +1,59 @@
 # citeclamp
 
-*The model drafts. It never signs, and it never sends.*
+The model drafts. It never signs, and it never sends.
 
-**Status:** pre-release. All seven sessions merged. The `/seal` and `/health` endpoint runs locally behind HMAC. The executor gates every ProposedAction behind a one-time permit. No public deploy yet. Endpoint URLs and any measured value read `__AFTER_DEPLOY__` until the first deploy lands.
+[![Test](https://github.com/jakemorganlabs/citeclamp/actions/workflows/test.yml/badge.svg)](https://github.com/jakemorganlabs/citeclamp/actions/workflows/test.yml)
+![Release](https://img.shields.io/github/v/release/jakemorganlabs/citeclamp?label=release)
+
+**Status:** v1.0.0. Deployed on a single Hetzner VPS as a systemd service, bound to loopback behind HMAC. Public hostname `https://seal.jakemorganlabs.dev` is being attached to the Cloudflare tunnel; until it resolves, the endpoint below answers only on the box.
+**Seal endpoint:** `https://seal.jakemorganlabs.dev/seal` (HMAC signed, rate limited 5 req / 10 s / IP).
+**Health probe:** `https://seal.jakemorganlabs.dev/health` (no auth, no seal).
+
+## Scope of the deployment
+
+The deployed `/seal` seals every draft against one fixed evidence set: [`examples/evidence.json`](examples/evidence.json), baked into the server at boot. It holds one item, `e-1`, that reads "The link is limited to 90 metres." A draft that cites any other id comes back `ORPHAN_CITATION`. That is the sealer working, not a fault. Per-request evidence is a later session.
+
+The service calls no model. It has no database, no migrations, and no generated objects. It reads a draft, walks it, and returns a sealed response or a veto list. Any model can sit in front of it, because citeclamp reads only the draft the model emits.
+
+## Live demo
+
+A signed request and a sealed response, then the same endpoint vetoing a draft whose number does not match the evidence. The veto is the point.
+
+**Signed request:**
+```bash
+BODY='{"sentences":[{"text":"The link is limited to 90 metres.","kind":"factual","citations":["e-1"],"numbers":[{"value":"90","claim":{"kind":"evidence_span","evidence_id":"e-1","start":23,"end":25}}]}],"tool_calls":[]}'
+TIMESTAMP=$(date +%s)
+SIG=$(printf '%s.%s' "$TIMESTAMP" "$BODY" | openssl dgst -sha256 -hmac "$HMAC_SECRET" -hex | awk '{print $2}')
+curl -s -H "x-citeclamp-timestamp: $TIMESTAMP" -H "x-citeclamp-signature: $SIG" \
+     -H "content-type: application/json" --data-binary "$BODY" \
+     https://seal.jakemorganlabs.dev/seal | jq .
+```
+
+**Sealed:**
+```json
+{
+  "sealed": true,
+  "sentences": [{ "text": "The link is limited to 90 metres.", "citations": ["e-1"] }],
+  "sealed_numbers": [
+    { "value": "90", "proof": { "kind": "evidence_span", "evidence_id": "e-1", "start": 23, "end": 25 } }
+  ],
+  "proposed_actions": []
+}
+```
+
+**Vetoed** (the same draft with `95` in place of `90`):
+```json
+{
+  "sealed": false,
+  "vetoes": [
+    { "code": "UNSIGNED_NUMBER", "detail": "span e-1[23:25] does not equal \"95\"", "locus": "sentences[0].numbers[0]" }
+  ]
+}
+```
+
+**Unsigned request:** `401 {"error":"unauthorized"}` before any parse or seal runs.
+
+The captured request and response pairs live in [`docs/evidence/`](docs/evidence/). See Evidence below.
 
 ## What it does
 
@@ -16,11 +67,13 @@ A deterministic sealer, with no model inside it, walks that draft:
 4. It neuters every side effect. An email, a Slack post, a CRM write, an HTTP POST becomes a ProposedAction that cannot fire.
 5. It returns a sealed response, or it returns a list of typed vetoes.
 
-The veto is not an error path. It is the default. A draft earns a sealed response by clearing every gate, or it comes back with `UNSIGNED_NUMBER`, `ORPHAN_CITATION`, or `SIDE_EFFECT_WITHOUT_PERMIT` and stops there. The model is never handed the execute path, so it cannot smuggle one.
+The veto is not an error path. It is the default. A draft earns a sealed response by clearing every gate, or it comes back with `UNSIGNED_NUMBER`, `ORPHAN_CITATION`, or `SIDE_EFFECT_WITHOUT_PERMIT` and stops there. A draft that fails the schema itself returns `MALFORMED_DRAFT` before any seal runs.
 
 ## Two processes, one permit
 
 Execution is a second process. It runs a ProposedAction only against a one-time permit token that the generator cannot mint. The process that writes the draft and the process that acts on it never share an authority. A permit is single use. It binds to one action. It burns on redemption.
+
+The executor CLI shows the lifecycle end to end. Run without a permit, it refuses with `NO_PERMIT`. Run with a freshly minted permit, it runs the dummy `send_email` once and returns a receipt. Run again with the same permit, it refuses with `PERMIT_SPENT`. The capture is [`docs/evidence/executor_permit_lifecycle.json`](docs/evidence/executor_permit_lifecycle.json).
 
 ## Architecture
 
@@ -52,27 +105,57 @@ The model writes a draft. The sealer walks it with no model in the loop. A pass 
 | Citation | The factual sentence cites an evidence id that exists | `ORPHAN_CITATION` |
 | Side effect | Never. Every side effect becomes an inert ProposedAction, and a side effect written as prose is refused | `SIDE_EFFECT_WITHOUT_PERMIT` |
 
-A draft that fails the schema itself returns `MALFORMED_DRAFT` before any seal runs.
+## Evidence
 
-## Ship order
+Every file under [`docs/evidence/`](docs/evidence/) is a real request against the deployed service, captured by [`scripts/capture_evidence.sh`](scripts/capture_evidence.sh). No file carries a secret.
 
-Each merge is demoable on its own. The build runs as spec-driven sessions. One session is one `plan.md`. The planner writes the plan. A separate execution agent writes the code from the plan and the repo alone.
+| File | What it shows |
+|---|---|
+| `sealed_pass.json` | One sealed draft. The number `90` is the byte span `e-1[23:25]`. |
+| `veto_unsigned_number.json` | `UNSIGNED_NUMBER`. The draft says `95`; the span reads `90`. |
+| `veto_orphan_citation.json` | `ORPHAN_CITATION`. The draft cites `e-9`; the set holds only `e-1`. |
+| `veto_side_effect_without_permit.json` | `SIDE_EFFECT_WITHOUT_PERMIT`. The verb "send" sits in prose instead of a declared tool call. |
+| `sealed_with_proposed_action.json` | A declared `send_email` call neutered into one inert ProposedAction, `requires_permit: true`. |
+| `executor_permit_lifecycle.json` | The executor refused with `NO_PERMIT`, run once on a one-time permit, refused on replay with `PERMIT_SPENT`. |
+| `unsigned_request_401.json` | An unsigned POST rejected with 401 before any parse. |
 
-| Session | Merge | Deliverable | Status |
-|---|---|---|---|
-| 00 | 1 | Scaffold, schemas, shared types, the veto union | merged |
-| 01 | 1 | Number sealing: evidence spans and the calculator registry | merged |
-| 02 | 1 | Citation sealing and side-effect neutering | merged |
-| 03 | 1 | The `seal()` walk and a paste-a-draft CLI | merged |
-| 04 | 2 | 20 to 40 fixtures and a fixture runner | merged |
-| 05 | 3 | One HMAC endpoint: `/seal` signed, `/health` open | merged |
-| 06 | 4 | Executor process, one-time permit, dummy `send_email` | merged |
+## Security
 
-Session 03 closes the first demo: paste a JSON draft, get a sealed response or veto codes, with no agent and no network.
+1. `/seal` verifies `HMAC-SHA256(secret, "timestamp.rawbody")` in hex from the headers `x-citeclamp-timestamp` and `x-citeclamp-signature`. The compare is constant time. The body is verified as raw bytes before any JSON parse.
+2. A timestamp outside the 300 second skew window is refused as stale (`config/server.json`).
+3. The service binds `127.0.0.1:8787` only. The public hostname is a Cloudflare tunnel with no open inbound port.
+4. A Cloudflare WAF rule blocks any IP above 5 requests per 10 seconds on the hostname.
+5. The systemd unit runs as an unprivileged user with `NoNewPrivileges` and `PrivateTmp`.
+6. The only secret is `HMAC_SECRET`, read from `deploy/.env.production`, which is gitignored. The repo tracks only `deploy/.env.production.example`.
+
+## Run locally
+
+1. Install Node 22.15 or newer. The service runs the TypeScript sources with Node's native type stripping. There is no build step and no tsx.
+2. Run `npm ci`.
+3. Run `npm test`, `npm run types`, and `npm run lint`.
+4. Seal a draft with no server: `npm run seal -- examples/draft_pass.json examples/evidence.json`. Exit 0 is a pass, exit 1 is a veto.
+5. Walk the permit lifecycle: `npm run -s seal -- examples/draft_send_email.json examples/evidence.json > sealed.json && npm run execute -- sealed.json`.
+6. Start the server: `HMAC_SECRET=$(openssl rand -hex 32) npm start`. Then `npm run smoke` with the same `HMAC_SECRET` exported sends one signed request to `/seal`.
+
+## Deploy
+
+1. Clone to `/opt/citeclamp` and run `npm ci --omit=dev`. That installs ajv only.
+2. Copy `deploy/.env.production.example` to `deploy/.env.production`, set `HMAC_SECRET`, and `chmod 600` it.
+3. Copy `deploy/citeclamp.service` to `/etc/systemd/system/`, then `systemctl daemon-reload && systemctl enable --now citeclamp`.
+4. Point a Cloudflare tunnel public hostname at `http://localhost:8787` with an empty path. Set the rate limit rule before exposing.
+5. Follow the logs with `journalctl -u citeclamp -f`. Each request logs one JSON line with a `trace_id`, route, action, and status.
+
+## CI and release
+
+1. `Test` runs on every push and pull request to `main`: vitest, `tsc --noEmit`, eslint, the seal and executor CLIs, then a server boot under the native strip-types hook with one signed smoke request and one unsigned 401.
+2. A `v*` tag creates a GitHub Release and a SLSA build-provenance attestation.
+3. Release: https://github.com/jakemorganlabs/citeclamp/releases/tag/v1.0.0
 
 ## What it does not do
 
 It does not judge whether a claim is true. It checks that the claim is sourced and that its numbers are sealed. The truth of the evidence set is the caller's problem. Provenance is citeclamp's.
+
+It does not accept evidence per request. The deployed sealer knows one evidence set. Per-request evidence is a later session.
 
 It does not sandbox the executor. It gates the executor with a permit the generator cannot mint. A compromised permit authority is out of scope for v1.
 
@@ -100,21 +183,22 @@ src/
   fixture_runner.ts    load a fixture, run seal, compare to the expected outcome
   auth.ts              HMAC-SHA256 verification
   server.ts            /seal (HMAC) and /health (open)
-  permit.ts            permit verify and burn
+  permit.ts            permit mint, verify, and burn
   executor.ts          second process, permit-gated
   tools/send_email.ts  dummy side-effect tool
-tests/       one test file per module
-examples/    sample drafts and an evidence set for the paste-a-draft CLI
-fixtures/    invented totals, near-miss citations, extra digits, smuggled tool calls
-scripts/     seal.ts paste-a-draft CLI, bash smoke scripts
+tests/       one test file per module, 125 tests
+examples/    sample drafts and the evidence set the deployed server bakes in
+fixtures/    22 adversarial cases: invented totals, near-miss citations, extra digits, smuggled tool calls
+scripts/     ts-register.mjs resolve hook, seal.ts and execute.ts CLIs, smoke and evidence capture
 specs/       permit.tla and permit.cfg, the permit lifecycle
-config/      pinned values as *.json, read-only tool allowlist and side-effect list
-sessions/    the plan.md files, one per session, run in order
+config/      pinned values as *.json: port and skew, read-only tool allowlist, side-effect verbs, calculators
+deploy/      the systemd unit and the env example
+docs/        evidence captures from the deployed service
 ```
 
 ## Build
 
-citeclamp is built with a two-agent, spec-driven flow. The planner reads a task and returns one `plan.md`. The execution agent reads only `plan.md` and the repo, then writes the code. The plan is read-only after handoff. Every plan instruction is written in Simplified Technical English and EARS. The session plans live in `sessions/` and run in order, 00 through 06.
+citeclamp was built with a two-agent, spec-driven flow. A planner reads a task and returns one plan. An execution agent reads only the plan and the repo, then writes the code. Each of the seven sessions merged on its own and was demoable on its own. The deploy session added the native strip-types resolve hook, the start scripts, the CI, and the evidence set.
 
 ## Lineage
 

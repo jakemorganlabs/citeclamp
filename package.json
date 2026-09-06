@@ -1,6 +1,6 @@
 {
   "name": "citeclamp",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "description": "Deterministic sealer between any model and the world. The model drafts. It never signs, and it never sends.",
   "type": "module",
   "private": true,

@@ -1,0 +1,10 @@
+{
+  "endpoint": "http://127.0.0.1:8787/seal",
+  "headers_sent": [
+    "content-type"
+  ],
+  "status": 401,
+  "response": {
+    "error": "unauthorized"
+  }
+}

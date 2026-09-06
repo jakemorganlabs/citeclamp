@@ -1,0 +1,42 @@
+{
+  "action": {
+    "action_id": "07ed982f17215f7fd64d67f1525d4d99fe7acedaa8b456d328a3bcca305d5308",
+    "tool": "send_email",
+    "args": {
+      "to": "ops@example.com",
+      "subject": "link budget"
+    },
+    "requires_permit": true
+  },
+  "runs": [
+    {
+      "step": "without_permit",
+      "permit_present": false,
+      "result": {
+        "ran": false,
+        "reason": "NO_PERMIT"
+      }
+    },
+    {
+      "step": "with_permit",
+      "permit_present": true,
+      "result": {
+        "ran": true,
+        "receipt": {
+          "action_id": "07ed982f17215f7fd64d67f1525d4d99fe7acedaa8b456d328a3bcca305d5308",
+          "message_id": "d0cb0a090d225f3b812879518a04213ace1f296a8f5d6725431f3a8904574456",
+          "status": "sent"
+        }
+      }
+    },
+    {
+      "step": "replay_same_permit",
+      "permit_present": true,
+      "result": {
+        "ran": false,
+        "reason": "PERMIT_SPENT"
+      }
+    }
+  ],
+  "permit_lifecycle_ok": true
+}

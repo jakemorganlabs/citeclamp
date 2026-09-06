@@ -1,0 +1,37 @@
+{
+  "endpoint": "http://127.0.0.1:8787/seal",
+  "request": {
+    "sentences": [
+      {
+        "text": "The link is limited to 95 metres.",
+        "kind": "factual",
+        "citations": [
+          "e-1"
+        ],
+        "numbers": [
+          {
+            "value": "95",
+            "claim": {
+              "kind": "evidence_span",
+              "evidence_id": "e-1",
+              "start": 23,
+              "end": 25
+            }
+          }
+        ]
+      }
+    ],
+    "tool_calls": []
+  },
+  "status": 200,
+  "response": {
+    "sealed": false,
+    "vetoes": [
+      {
+        "code": "UNSIGNED_NUMBER",
+        "detail": "span e-1[23:25] does not equal \"95\"",
+        "locus": "sentences[0].numbers[0]"
+      }
+    ]
+  }
+}
