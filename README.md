@@ -53,7 +53,7 @@ curl -s -H "x-citeclamp-timestamp: $TIMESTAMP" -H "x-citeclamp-signature: $SIG" 
 
 **Unsigned request:** `401 {"error":"unauthorized"}` before any parse or seal runs.
 
-**Burst:** 12 requests from one IP inside one second returned `200 200 200 200` then eight `429`. The rate limit rule sits in front of the tunnel, so the service never saw the blocked eight.
+**Burst:** 12 requests from one IP inside one second returned five `200` then seven `429`. The rate limit rule sits in front of the tunnel, so the service never saw the blocked seven.
 
 The captured request and response pairs live in [`docs/evidence/`](docs/evidence/). See Evidence below.
 
@@ -120,7 +120,7 @@ Every file under [`docs/evidence/`](docs/evidence/) is a real request against `h
 | `sealed_with_proposed_action.json` | A declared `send_email` call neutered into one inert ProposedAction, `requires_permit: true`. |
 | `executor_permit_lifecycle.json` | The executor refused with `NO_PERMIT`, run once on a one-time permit, refused on replay with `PERMIT_SPENT`. |
 | `unsigned_request_401.json` | An unsigned POST rejected with 401 before any parse. |
-| `rate_limit_burst.json` | 12 health requests in one second: four pass, eight blocked with 429 by the Cloudflare rule. |
+| `rate_limit_burst.json` | 12 health requests in one second: five pass, seven blocked with 429 by the Cloudflare rule. |
 
 ## Security
 
