@@ -5,7 +5,7 @@ The model drafts. It never signs, and it never sends.
 [![Test](https://github.com/jakemorganlabs/citeclamp/actions/workflows/test.yml/badge.svg)](https://github.com/jakemorganlabs/citeclamp/actions/workflows/test.yml)
 ![Release](https://img.shields.io/github/v/release/jakemorganlabs/citeclamp?label=release)
 
-**Status:** v1.0.0. Deployed on a single Hetzner VPS as a systemd service, bound to loopback behind HMAC. Public hostname `https://seal.jakemorganlabs.dev` is being attached to the Cloudflare tunnel; until it resolves, the endpoint below answers only on the box.
+**Status:** v1.0.0, deployed and live at https://seal.jakemorganlabs.dev (HMAC-gated; `/health` is public). Single Hetzner VPS, systemd service on loopback, Cloudflare tunnel, zero open inbound ports.
 **Seal endpoint:** `https://seal.jakemorganlabs.dev/seal` (HMAC signed, rate limited 5 req / 10 s / IP).
 **Health probe:** `https://seal.jakemorganlabs.dev/health` (no auth, no seal).
 
@@ -52,6 +52,8 @@ curl -s -H "x-citeclamp-timestamp: $TIMESTAMP" -H "x-citeclamp-signature: $SIG" 
 ```
 
 **Unsigned request:** `401 {"error":"unauthorized"}` before any parse or seal runs.
+
+**Burst:** 12 requests from one IP inside one second returned `200 200 200 200` then eight `429`. The rate limit rule sits in front of the tunnel, so the service never saw the blocked eight.
 
 The captured request and response pairs live in [`docs/evidence/`](docs/evidence/). See Evidence below.
 
@@ -107,7 +109,7 @@ The model writes a draft. The sealer walks it with no model in the loop. A pass 
 
 ## Evidence
 
-Every file under [`docs/evidence/`](docs/evidence/) is a real request against the deployed service, captured by [`scripts/capture_evidence.sh`](scripts/capture_evidence.sh). No file carries a secret.
+Every file under [`docs/evidence/`](docs/evidence/) is a real request against `https://seal.jakemorganlabs.dev`, captured by [`scripts/capture_evidence.sh`](scripts/capture_evidence.sh) with `PACE_SECONDS=3` to stay under the rate limit. The executor lifecycle runs the CLI on the box, since the executor is a second process and not an endpoint. No file carries a secret.
 
 | File | What it shows |
 |---|---|
@@ -118,6 +120,7 @@ Every file under [`docs/evidence/`](docs/evidence/) is a real request against th
 | `sealed_with_proposed_action.json` | A declared `send_email` call neutered into one inert ProposedAction, `requires_permit: true`. |
 | `executor_permit_lifecycle.json` | The executor refused with `NO_PERMIT`, run once on a one-time permit, refused on replay with `PERMIT_SPENT`. |
 | `unsigned_request_401.json` | An unsigned POST rejected with 401 before any parse. |
+| `rate_limit_burst.json` | 12 health requests in one second: four pass, eight blocked with 429 by the Cloudflare rule. |
 
 ## Security
 
@@ -142,7 +145,8 @@ Every file under [`docs/evidence/`](docs/evidence/) is a real request against th
 1. Clone to `/opt/citeclamp` and run `npm ci --omit=dev`. That installs ajv only.
 2. Copy `deploy/.env.production.example` to `deploy/.env.production`, set `HMAC_SECRET`, and `chmod 600` it.
 3. Copy `deploy/citeclamp.service` to `/etc/systemd/system/`, then `systemctl daemon-reload && systemctl enable --now citeclamp`.
-4. Point a Cloudflare tunnel public hostname at `http://localhost:8787` with an empty path. Set the rate limit rule before exposing.
+4. Set the Cloudflare rate limit rule on the hostname first, then add the tunnel public hostname pointing at `http://localhost:8787` with an empty path.
+6. Capture the evidence set: `BASE_URL=https://seal.jakemorganlabs.dev PACE_SECONDS=3 bash scripts/capture_evidence.sh` with `HMAC_SECRET` exported.
 5. Follow the logs with `journalctl -u citeclamp -f`. Each request logs one JSON line with a `trace_id`, route, action, and status.
 
 ## CI and release

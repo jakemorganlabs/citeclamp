@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 # Purpose: capture the evidence set for docs/evidence from a running /seal endpoint plus the executor CLI.
 # Flow:
-# 1. Read BASE_URL (default the local loopback port) and HMAC_SECRET from the environment.
+# 1. Read BASE_URL (default the local loopback port), HMAC_SECRET, and PACE_SECONDS from the environment.
+#    Set PACE_SECONDS=3 against the public hostname so the capture stays under the 5 per 10 s rate limit.
 # 2. Sign and POST one draft per outcome: a sealed pass and one veto of each type.
 # 3. Save each request and response pair as JSON under docs/evidence.
 # 4. Run the executor CLI on the sealed send_email draft and save the permit lifecycle.
@@ -11,6 +12,7 @@ set -euo pipefail
 PORT="$(node -pe "JSON.parse(require('fs').readFileSync('config/server.json','utf8')).port")"
 BASE_URL="${BASE_URL:-http://127.0.0.1:${PORT}}"
 OUT="${OUT:-docs/evidence}"
+PACE_SECONDS="${PACE_SECONDS:-0}"
 
 if [[ -z "${HMAC_SECRET:-}" ]]; then
   echo "capture_evidence: set HMAC_SECRET in the environment" >&2
@@ -30,9 +32,15 @@ post() {
     --data-binary "${body}")"
   code="$(printf '%s' "${response}" | tail -n 1)"
   payload="$(printf '%s' "${response}" | sed '$d')"
+  if [[ "${code}" != "200" ]]; then
+    echo "capture_evidence: ${name} returned ${code}; slow down with PACE_SECONDS and rerun" >&2
+    exit 1
+  fi
   jq -n --arg url "${BASE_URL}/seal" --argjson request "${body}" --argjson status "${code}" --argjson response "${payload}" \
-    '{endpoint: $url, request: $request, status: $status, response: $response}' > "${OUT}/${name}.json"
+    '{endpoint: $url, request: $request, status: $status, response: $response}' > "${OUT}/.${name}.tmp"
+  mv "${OUT}/.${name}.tmp" "${OUT}/${name}.json"
   printf '%s status=%s sealed=%s\n' "${name}" "${code}" "$(printf '%s' "${payload}" | jq -c '.sealed // .error')"
+  sleep "${PACE_SECONDS}"
 }
 
 # 1. Sealed pass: the number is a byte-span copy of e-1, the citation resolves, no side effect.

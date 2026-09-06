@@ -1,5 +1,5 @@
 {
-  "endpoint": "http://127.0.0.1:8787/seal",
+  "endpoint": "https://seal.jakemorganlabs.dev/seal",
   "headers_sent": [
     "content-type"
   ],
